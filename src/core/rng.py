@@ -9,3 +9,4 @@ def make_rng(seed: int) -> np.random.Generator:
 def combine_seeds(instance_seed: int, seed_algo: int, salt: int = 1_000_003) -> int:
     """Deterministic combination for reproducible init solutions across algorithms."""
     return int(instance_seed) * int(salt) + int(seed_algo)
+
