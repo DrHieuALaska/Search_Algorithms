@@ -51,7 +51,8 @@ def artificial_bee_colony_with_evals(
     # -------------------------
     LOWER_BOUND = np.array([b[0] for b in BOUNDS])
     UPPER_BOUND = np.array([b[1] for b in BOUNDS])
-
+    if len(LOWER_BOUND) != DIMENSION or len(UPPER_BOUND) != DIMENSION:
+        raise ValueError("Bounds length must match dimension")
     # -------------------------
     # Initialization
     # -------------------------
@@ -184,59 +185,3 @@ def ABC_run_trials_multi_func_to_csv(FUNCTIONS_FOR_ABC, folder_path, file_name, 
     print(f"Convergence history columns: f1 → {f_cols[-1]}")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# summary = summarize_trials(results, total_evals_budget=TOTAL_BUDGET)
-
-# # -----------------------------------------------
-# # Plot median convergence curve across trials
-# # -----------------------------------------------
-# max_len = max(len(r["convergence_history"]) for r in results)
-# padded = []
-# for r in results:
-#     hist = r["convergence_history"]
-#     last_val = hist[-1][1] if hist else np.inf
-#     # pad to same length with last known best
-#     padded.append([v for _, v in hist] + [last_val] * (max_len - len(hist)))
-
-# padded = np.array(padded)
-# eval_axis = np.arange(1, max_len + 1) * algo_kwargs["INTERVAL_EVALS"]
-
-# plt.figure(figsize=(9, 5))
-# plt.plot(eval_axis, np.median(padded, axis=0), label="Median", linewidth=2)
-# plt.fill_between(eval_axis,
-#                  np.percentile(padded, 25, axis=0),
-#                  np.percentile(padded, 75, axis=0),
-#                  alpha=0.3, label="IQR (25–75%)")
-# plt.axhline(algo_kwargs["F_TARGET"], color="red", linestyle="--", label=f"FHT target = {algo_kwargs['F_TARGET']}")
-# plt.xlabel("Function Evaluations")
-# plt.ylabel("Best Fitness")
-# plt.title("ABC on Rastrigin (10D) — 20 Trials")
-# plt.legend()
-# plt.yscale("log")
-# plt.tight_layout()
-# plt.show()

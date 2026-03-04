@@ -13,6 +13,8 @@ COLORS = {
     "Firefly":       "#FF5722",
     "PSO":           "#9C27B0",
     "DE":            "#FF9800",
+    "Simulated Annealing": "#3F51B5",
+    "Hill Climbing":      "#009688",
 }
 
 
@@ -265,6 +267,8 @@ if __name__ == "__main__":
         "Firefly":       "firefly_graph.csv",
         "PSO":           "pso_graph.csv",
         "DE":            "de_graph.csv",
+        "Simulated Annealing": "simulated_annealing_graph.csv",
+        "Hill Climbing":      "hill_climbing_graph.csv",
     }
     FUNCTIONS     = ["sphere", "rastrigin", "rosenbrock"]
     SOURCE_FOLDER = "graph_data"
