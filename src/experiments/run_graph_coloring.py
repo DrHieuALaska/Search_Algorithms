@@ -16,11 +16,11 @@ from core.logging import RunLogger
 from core.config import load_yaml
 from problems.graph_coloring import GraphColoringProblem
 
-from solvers.sa_graphcolor import SimulatedAnnealingGraphColoring
-from solvers.ga_graphcolor import GeneticAlgorithmGraphColoring
-from solvers.hc_graphcolor import HillClimbingGraphColoring
-from solvers.aco_graphcolor import ACO_GraphColoring
-from solvers.dfs_graphcolor import DFS_BacktrackingGraphColoring
+from solvers.graphcoloring.sa_graphcolor import SimulatedAnnealingGraphColoring
+from solvers.graphcoloring.ga_graphcolor import GeneticAlgorithmGraphColoring
+from solvers.graphcoloring.hc_graphcolor import HillClimbingGraphColoring
+from solvers.graphcoloring.aco_graphcolor import ACO_GraphColoring
+from solvers.graphcoloring.dfs_graphcolor import DFS_BacktrackingGraphColoring
 
 
 def parse_args() -> argparse.Namespace:

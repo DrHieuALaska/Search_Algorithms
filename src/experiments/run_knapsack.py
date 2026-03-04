@@ -13,11 +13,11 @@ from core.logging import RunLogger
 from core.config import load_yaml
 from problems.knapsack import KnapsackProblem
 
-from solvers.sa_knapsack import SimulatedAnnealingKnapsack
-from solvers.ga_knapsack import GeneticAlgorithmKnapsack
-from solvers.hc_knapsack import HC_Knapsack
-from solvers.tlbo_knapsack import TLBO_Knapsack
-from solvers.abc_knapsack import ABC_Knapsack
+from solvers.knapsack.sa_knapsack import SimulatedAnnealingKnapsack
+from solvers.knapsack.ga_knapsack import GeneticAlgorithmKnapsack
+from solvers.knapsack.hc_knapsack import HC_Knapsack
+from solvers.knapsack.tlbo_knapsack import TLBO_Knapsack
+from solvers.knapsack.abc_knapsack import ABC_Knapsack
 
 
 def parse_args() -> argparse.Namespace:
