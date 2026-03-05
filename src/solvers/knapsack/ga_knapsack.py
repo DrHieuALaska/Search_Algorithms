@@ -20,9 +20,11 @@ class GeneticAlgorithmKnapsack:
         *,
         population_size: int = 100,
         generations: int = 400,
-        mutation_rate: float = 0.02,   # per-bit flip probability
+        crossover_rate: float = 0.9,
+        mutation_rate: float = 0.02,
         tournament_k: int = 10,
         trace_every: int = 10,
+        penalty_lambda: float = 1000.0,
         feasible_only: bool = True,
     ):
         if population_size <= 2:
@@ -35,6 +37,10 @@ class GeneticAlgorithmKnapsack:
             raise ValueError("tournament_k must be in [1, population_size]")
         if trace_every <= 0:
             raise ValueError("trace_every must be > 0")
+        if not (0.0 <= crossover_rate <= 1.0):
+            raise ValueError("crossover_rate must be in [0,1]")
+        self.crossover_rate = float(crossover_rate)
+        self.penalty_lambda = float(penalty_lambda)
         self.population_size = int(population_size)
         self.generations = int(generations)
         self.mutation_rate = float(mutation_rate)
@@ -151,7 +157,10 @@ class GeneticAlgorithmKnapsack:
             for i in range(1, self.population_size):
                 p1 = pop[self._tournament(costs, rng)]
                 p2 = pop[self._tournament(costs, rng)]
-                child = self._crossover_1pt(p1, p2, rng)
+                if rng.random() < self.crossover_rate:
+                    child = self._crossover_1pt(p1, p2, rng)
+                else:
+                    child = p1.copy()
                 self._mutate(child, rng)
                 if self.feasible_only:
                     child = problem.repair(child, rng)

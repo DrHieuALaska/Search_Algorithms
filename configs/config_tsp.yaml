@@ -1,11 +1,11 @@
 experiment:
   exp_id: exp_001
-  n_list: [5, 15]
-  instances: 10
-  runs_per_instance: 10
+  n_list: [30]
+  instances: 5
+  runs_per_instance: 3
   scale: 100.0
 
-  run_csv: runs.csv
+  run_csv: run.csv
   trace_csv: trace.csv
   code_version: ""
 
@@ -23,7 +23,7 @@ TLBO:
   pop_size: 120
   iters: 430
   move_frac_max: 0.4
-  trace_every: 10
+  trace_every: 10 
 
 GA:
   population_size: 100

@@ -1,6 +1,6 @@
 experiment:
   exp_id: exp_kp_sweep_001
-  n_items_list: [100, 200]      # recommended for sensitivity
+  n_items_list: [100]      # recommended for sensitivity
   instances: 5
   runs_per_instance: 3
 
@@ -18,8 +18,8 @@ experiment:
   trace_csv: trace_knapsack_sweep.csv
   code_version: ""
 
-algos: [SA_KP, GA_KP, HC_KP, TLBO_KP, ABC_KP]
-
+# algos: [SA_KP, GA_KP, HC_KP, TLBO_KP, ABC_KP]
+algos: [SA_KP]
 # Base params
 SA_KP:
   Tmin: 0.001
