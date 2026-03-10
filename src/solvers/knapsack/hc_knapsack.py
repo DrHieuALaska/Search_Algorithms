@@ -21,6 +21,7 @@ class HC_Knapsack:
         max_iter: int = 50_000,
         mode: str = "first",
         trace_every: int = 200,
+        flip_k: int = 1,
         feasible_only: bool = True,
     ):
         if max_iter <= 0:

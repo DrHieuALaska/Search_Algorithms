@@ -167,8 +167,12 @@ class GeneticAlgorithmKnapsack:
                 new_pop[i] = child
 
             pop = new_pop
-            costs = np.array([problem.evaluate(pop[i]) for i in range(self.population_size)], dtype=float)
-            evals_cost += int(self.population_size)
+            new_costs = np.empty(self.population_size, dtype=float)
+            new_costs[0] = costs[elite_idx]   # carry over — no evaluate() call
+            for i in range(1, self.population_size):
+                new_costs[i] = problem.evaluate(pop[i])
+            costs = new_costs
+            evals_cost += int(self.population_size - 1)
 
             best_idx = int(np.argmin(costs))
             if float(costs[best_idx]) < best_cost:

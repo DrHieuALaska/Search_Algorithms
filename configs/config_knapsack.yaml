@@ -14,16 +14,16 @@ experiment:
   penalty_lambda: 1000.0     
   feasible_only: true        # if true, repair solutions to feasibility
 
-  run_csv: runs_knapsack_ga_t3.csv
-  trace_csv: trace_knapsack_ga_t3.csv
+  run_csv: runs_knapsack_ga_c2.csv
+  trace_csv: trace_knapsack_ga_c2.csv
   code_version: ""
 
 # algos: [SA_KP, GA_KP, HC_KP, TLBO_KP, ABC_KP]
 algos: [GA_KP]
 
 SA_KP:
-  T0: 10.0
-  Tmin: 1.0
+  T0: 1000.0
+  Tmin: 0.001
   alpha: 0.99
   max_iter: 50000
   trace_every: 200
@@ -31,10 +31,10 @@ SA_KP:
 
 GA_KP:
   population_size: 100
-  generations: 500
-  crossover_rate: 0.8
-  mutation_rate: 0.01
-  tournament_k: 7
+  generations: 99
+  crossover_rate: 0.9
+  mutation_rate: 0.02
+  tournament_k: 5
   trace_every: 10
 
 HC_KP:
@@ -49,8 +49,8 @@ TLBO_KP:
   trace_every: 10
 
 ABC_KP:
-  sn: 50                     # number of food sources
+  sn: 500                      # number of food sources
   iters: 500
-  limit: 50
+  limit: 100
   trace_every: 10
   flip_k: 1

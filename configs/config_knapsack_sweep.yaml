@@ -19,46 +19,50 @@ experiment:
   code_version: ""
 
 # algos: [SA_KP, GA_KP, HC_KP, TLBO_KP, ABC_KP]
-algos: [SA_KP]
+algos: [ABC_KP]
 # Base params
 SA_KP:
+  alpha: 0.99
   Tmin: 0.001
   trace_every: 200
   flip_k: 1
 
 GA_KP:
   population_size: 100
-  crossover_rate: 0.9
+  generation: 500
+  crossover_rate: 0.8
+  mutation_rate: 0.02
+  tournament_k: 5
   trace_every: 10
 
 HC_KP:
+  flip_k: 5
   trace_every: 200
 
 TLBO_KP:
+  iters: 500
+  pop_size: 50
   trace_every: 10
 
 ABC_KP:
+  sn: 50
   trace_every: 10
   flip_k: 1
 
 # 2 impactful params per algo
 sweeps:
   SA_KP:
-    alpha: [0.95, 0.99, 0.995]
-    T0:    [1, 10, 20]
+    alpha: [0.8, 0.95, 0.99, 0.995]
+    T0: [10, 100, 500, 1000]
 
   GA_KP:
-    mutation_rate: [0.005, 0.01, 0.05]
-    tournament_k:  [2, 5, 20]
+    tournament_k: [3, 5, 10, 20]
 
   HC_KP:
     mode:   [first, best]
-    flip_k: [1, 2, 5, 10]
 
   TLBO_KP:
-    pop_size: [20, 40, 60, 100]
-    iters:    [200, 500, 1000]   # NOTE: may exceed 50k evals; analysis should compare best@50k
+    move_prob: [0.2, 0.4, 0.6, 0.8]   # probability of moving towards teacher vs random
 
   ABC_KP:
-    sn:    [20, 50, 100]
     limit: [10, 25, 50, 100]

@@ -4,35 +4,40 @@ import os
 import sys
 import argparse
 import itertools
-import math
 import time
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, ".."))
+SRC_DIR  = os.path.abspath(os.path.join(THIS_DIR, ".."))
 if SRC_DIR not in sys.path:
     sys.path.insert(0, SRC_DIR)
 
 from core.logging import RunLogger
-from core.config import load_yaml
+from core.config  import load_yaml
+from core.eval_norm_gc import budget_for_algo_gc
 from problems.graph_coloring import GraphColoringProblem
 
-from solvers.graphcoloring.sa_graphcolor import SimulatedAnnealingGraphColoring
-from solvers.graphcoloring.ga_graphcolor import GeneticAlgorithmGraphColoring
-from solvers.graphcoloring.hc_graphcolor import HillClimbingGraphColoring
+from solvers.graphcoloring.sa_graphcolor  import SimulatedAnnealingGraphColoring
+from solvers.graphcoloring.ga_graphcolor  import GeneticAlgorithmGraphColoring
+from solvers.graphcoloring.hc_graphcolor  import HillClimbingGraphColoring
 from solvers.graphcoloring.aco_graphcolor import ACO_GraphColoring
 from solvers.graphcoloring.dfs_graphcolor import DFS_BacktrackingGraphColoring
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Run Graph Coloring experiments from YAML config")
-    p.add_argument("--config", type=str, required=True, help="Path to YAML config (e.g., configs/config_graphcolor.yaml)")
+    p = argparse.ArgumentParser(
+        description="Run Graph Coloring experiments from YAML config"
+    )
+    p.add_argument(
+        "--config", type=str, required=True,
+        help="Path to YAML config (e.g., configs/config_graphcolor.yaml)",
+    )
     return p.parse_args()
 
 
 def _grid(sweep_dict: dict) -> list[dict]:
     if not sweep_dict:
         return [{}]
-    keys = list(sweep_dict.keys())
+    keys   = list(sweep_dict.keys())
     values = [sweep_dict[k] for k in keys]
     return [{k: v for k, v in zip(keys, prod)} for prod in itertools.product(*values)]
 
@@ -42,99 +47,129 @@ def _tag(params: dict) -> str:
         return "base"
     parts = []
     for k, v in params.items():
-        kk = str(k).replace("_", "")
+        kk    = str(k).replace("_", "")
         v_str = str(v).replace(".", "p")
         parts.append(f"{kk}{v_str}")
     return "-".join(parts)
 
 
+def _build_solver(algo: str, params: dict, budget: int, n_nodes: int):
+    """
+    Construct the correct solver with a normalized-budget-derived iteration count.
+
+    BUG FIX: raw budgets are now derived via budget_for_algo_gc() so that all
+    algorithms receive an equal normalized evaluation budget.  Previously the
+    same raw budget was passed to every solver, which meant HC/SA (cheap delta
+    moves) got far fewer normalized evals than GA/ACO (expensive full evals).
+
+    BUG FIX (ACO): original used math.ceil(budget / ants) which could overshoot
+    by up to (ants-1) evals.  Now uses floor division via budget_for_algo_gc.
+    """
+    if algo == "SA_GC":
+        # HC/SA: raw_budget ≈ target * n  (delta is 1/n the cost of full eval)
+        raw = budget_for_algo_gc(budget, "SA_GC", n_nodes)
+        return SimulatedAnnealingGraphColoring(
+            T0          = float(params.get("T0",          5.0)),
+            Tmin        = float(params.get("Tmin",        1e-3)),
+            alpha       = float(params.get("alpha",       0.99)),
+            max_iter    = int(params.get("max_iter",      raw - 1)),
+            trace_every = int(params.get("trace_every",   200)),
+        )
+
+    elif algo == "HC_GC":
+        raw = budget_for_algo_gc(budget, "HC_GC", n_nodes)
+        return HillClimbingGraphColoring(
+            max_iter    = int(params.get("max_iter",    raw - 1)),
+            mode        = str(params.get("mode",        "first")),
+            trace_every = int(params.get("trace_every", 200)),
+        )
+
+    elif algo == "GA_GC":
+        # GA: evals_cost = pop (init) + gens * pop (offspring per gen)
+        # raw = pop + gens * pop  →  gens = (raw - pop) // pop
+        raw = budget_for_algo_gc(budget, "GA_GC", n_nodes)
+        pop  = int(params.get("population_size", 100))
+        gens = max(1, (raw - pop) // pop)
+        return GeneticAlgorithmGraphColoring(
+            population_size = pop,
+            generations     = int(params.get("generations",    gens)),
+            crossover_rate  = float(params.get("crossover_rate", 0.9)),
+            mutation_rate   = float(params.get("mutation_rate",  0.02)),
+            tournament_k    = int(params.get("tournament_k",    10)),
+            trace_every     = int(params.get("trace_every",     10)),
+        )
+
+    elif algo == "ACO_GC":
+        # ACO: evals_cost = iters * n_ants
+        # BUG FIX: use floor division (budget // ants) not ceil
+        raw  = budget_for_algo_gc(budget, "ACO_GC", n_nodes)
+        ants = int(params.get("n_ants", 30))
+        its  = max(1, raw // ants)
+        return ACO_GraphColoring(
+            n_ants           = ants,
+            iters            = int(params.get("iters",           its)),
+            alpha            = float(params.get("alpha",          1.0)),
+            beta             = float(params.get("beta",           2.0)),
+            rho              = float(params.get("rho",            0.1)),
+            Q                = float(params.get("Q",              1.0)),
+            trace_every      = int(params.get("trace_every",      10)),
+            deposit_best_only = bool(params.get("deposit_best_only", True)),
+        )
+
+    elif algo == "DFS_GC":
+        # DFS: not budget-controlled by evals_cost; time_limit and backtracks
+        # are the natural stopping criteria.
+        return DFS_BacktrackingGraphColoring(
+            time_limit_sec = float(params.get("time_limit_sec",  2.0)),
+            max_backtracks = int(params.get("max_backtracks",    2_000_000)),
+            trace_every    = int(params.get("trace_every",       10_000)),
+        )
+
+    return None
+
+
 def main():
     args = parse_args()
-    cfg = load_yaml(args.config)
+    cfg  = load_yaml(args.config)
 
-    exp = cfg.get("experiment", {})
-    algos = cfg.get("algos", ["SA_GC"])
+    exp    = cfg.get("experiment", {})
+    algos  = cfg.get("algos", ["SA_GC"])
     sweeps = cfg.get("sweeps", {})
 
-    exp_id = exp.get("exp_id", "exp_gc_001")
-    n_nodes_list = exp.get("n_nodes_list", [30])
-    k = int(exp.get("n_colors", 4))
-    edge_prob = float(exp.get("edge_prob", 0.2))
+    exp_id           = exp.get("exp_id",          "exp_gc_001")
+    n_nodes_list     = exp.get("n_nodes_list",     [30])
+    k                = int(exp.get("n_colors",     4))
+    edge_prob        = float(exp.get("edge_prob",  0.2))
     ensure_connected = bool(exp.get("ensure_connected", False))
 
-    instances = int(exp.get("instances", 10))
+    instances         = int(exp.get("instances",         10))
     runs_per_instance = int(exp.get("runs_per_instance", 10))
-    budget = int(exp.get("budget_evals", 50000))
+    budget            = int(exp.get("budget_evals",      50_000))
 
-    run_csv = exp.get("run_csv", "runs_graphcolor.csv")
-    trace_csv = exp.get("trace_csv", "trace_graphcolor.csv")
+    run_csv      = exp.get("run_csv",      "runs_graphcolor.csv")
+    trace_csv    = exp.get("trace_csv",    "trace_graphcolor.csv")
     code_version = exp.get("code_version", "")
 
     logger = RunLogger(run_csv=run_csv, trace_csv=trace_csv)
 
-    # build solver variants (algo_name, tag, solver)
-    variants = []
-    for algo in algos:
-        base_params = cfg.get(algo, {}) if isinstance(cfg.get(algo, {}), dict) else {}
-        sweep_params = sweeps.get(algo, {}) if isinstance(sweeps.get(algo, {}), dict) else {}
-
-        for sparams in _grid(sweep_params):
-            params = dict(base_params)
-            params.update(sparams)
-            tag = _tag(sparams)
-
-            if algo == "SA_GC":
-                solver = SimulatedAnnealingGraphColoring(
-                    T0=float(params.get("T0", 5.0)),
-                    Tmin=float(params.get("Tmin", 1e-3)),
-                    alpha=float(params.get("alpha", 0.99)),
-                    max_iter=int(params.get("max_iter", budget - 1)),
-                    trace_every=int(params.get("trace_every", 200)),
-                )
-            elif algo == "HC_GC":
-                solver = HillClimbingGraphColoring(
-                    max_iter=int(params.get("max_iter", budget - 1)),
-                    mode=str(params.get("mode", "first")),
-                    trace_every=int(params.get("trace_every", 200)),
-                )
-            elif algo == "GA_GC":
-                pop = int(params.get("population_size", 100))
-                gens = int(params.get("generations", max(1, (budget - pop) // pop)))
-                solver = GeneticAlgorithmGraphColoring(
-                    population_size=pop,
-                    generations=gens,
-                    crossover_rate=float(params.get("crossover_rate", 0.9)),
-                    mutation_rate=float(params.get("mutation_rate", 0.02)),
-                    tournament_k=int(params.get("tournament_k", 10)),
-                    trace_every=int(params.get("trace_every", 10)),
-                )
-            elif algo == "ACO_GC":
-                ants = int(params.get("n_ants", 30))
-                iters = int(params.get("iters", max(1, math.ceil(budget / ants))))
-                solver = ACO_GraphColoring(
-                    n_ants=ants,
-                    iters=iters,
-                    alpha=float(params.get("alpha", 1.0)),
-                    beta=float(params.get("beta", 2.0)),
-                    rho=float(params.get("rho", 0.1)),
-                    Q=float(params.get("Q", 1.0)),
-                    trace_every=int(params.get("trace_every", 10)),
-                    deposit_best_only=bool(params.get("deposit_best_only", True)),
-                )
-            elif algo == "DFS_GC":
-                solver = DFS_BacktrackingGraphColoring(
-                    time_limit_sec=float(params.get("time_limit_sec", 2.0)),
-                    max_backtracks=int(params.get("max_backtracks", 2_000_000)),
-                    trace_every=int(params.get("trace_every", 10000)),
-                )
-            else:
-                continue
-
-            variants.append((algo, tag, solver))
-
-    # run experiments
     for n_nodes in n_nodes_list:
         n_nodes = int(n_nodes)
+
+        # Build solver variants once per n_nodes (budget depends on n for HC/SA)
+        variants = []
+        for algo in algos:
+            base_params  = cfg.get(algo, {}) if isinstance(cfg.get(algo, {}), dict) else {}
+            sweep_params = sweeps.get(algo, {}) if isinstance(sweeps.get(algo, {}), dict) else {}
+
+            for sparams in _grid(sweep_params):
+                params = dict(base_params)
+                params.update(sparams)
+                tag    = _tag(sparams)
+                solver = _build_solver(algo, params, budget, n_nodes)
+                if solver is None:
+                    continue
+                variants.append((algo, tag, solver))
+
         for inst in range(instances):
             problem = GraphColoringProblem.random_instance(
                 n_nodes=n_nodes,
