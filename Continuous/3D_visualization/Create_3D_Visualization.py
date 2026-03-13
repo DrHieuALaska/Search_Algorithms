@@ -337,10 +337,10 @@ def make_gif(df, func_name, out_path, n_frames=90, n_pop=10):
 
 
 if __name__ == '__main__':
-    func_name = ["ABC", "Cuckoo", "DE", "Firefly", "PSO", "GA", "TLBO"]
+    func_name = ["abc", "cuckoo_search", "de", "firefly", "pso", "ga", "tlbo"]
     for i in range(len(func_name)):
         print(f"Function's name: {func_name[i]}" )
-        df = pd.read_csv(f'Data/{func_name[i]}_results.csv')
+        df = pd.read_csv(f'../Data_with_function_evaluations/trials_data/{func_name[i]}_results.csv')
         os.makedirs('3D_Gif', exist_ok=True)
         make_gif(df, func_name[i], f'3D_Gif/{func_name[i]}.gif', n_frames=90, n_pop=10)
         print("Done!")
