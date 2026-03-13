@@ -2,8 +2,8 @@ import numpy as np
 
 def ant_colony_optimization(
     distance_matrix,
-    n_ants=20,
-    n_iterations=100,
+    N_ANTS=20,
+    N_ITERATIONS=100,
     alpha=1.0,          # pheromone importance
     beta=2.0,           # distance importance
     evaporation=0.5,
@@ -17,12 +17,12 @@ def ant_colony_optimization(
     best_path = None
     best_length = float("inf")
 
-    for iteration in range(n_iterations):
+    for iteration in range(N_ITERATIONS):
 
         all_paths = []
         all_lengths = []
 
-        for ant in range(n_ants):
+        for ant in range(N_ANTS):
 
             visited = []
             current_city = np.random.randint(n_cities)

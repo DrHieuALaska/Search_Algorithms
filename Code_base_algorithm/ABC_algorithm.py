@@ -52,7 +52,6 @@ def artificial_bee_colony(
 
     best_solution = food_sources[np.argmin(fitness)].copy()
     best_fitness = np.min(fitness)
-    convergence = []
 
     # -----------------------------
     # Probability Calculation
@@ -128,37 +127,6 @@ def artificial_bee_colony(
         if current_best_fitness < best_fitness:
             best_fitness = current_best_fitness
             best_solution = food_sources[current_best_index].copy()
-        
-        convergence.append(best_fitness)
 
-    return best_solution, best_fitness, convergence
+    return best_solution, best_fitness
 
-
-def sphere(X):
-    return X[0]**2 + X[1]**2
-
-def rosenbrock_func(X):
-    return np.sum(100*(X[1:] - X[:-1]**2)**2 + (X[:-1] - 1)**2)
-
-def rastrigin(X):
-    A = 10
-    return A * len(X) + np.sum(X**2 - A * np.cos(2 * np.pi * X))
-
-DIMENSION = 10
-
-SPHERE_BOUNDS = [[-5.12, 5.12]] * DIMENSION
-ROSENBROCK_BOUNDS = [[-5, 10]] * DIMENSION
-RASTRIGIN_BOUNDS = [[-5.12, 5.12]] * DIMENSION
-
-best_x, best_fx, _ = artificial_bee_colony(
-    objective_function=rosenbrock_func,
-    DIMENSION=DIMENSION,
-    BOUNDS=ROSENBROCK_BOUNDS,
-    COLONY_SIZE=40,
-    MAX_ITERATIONS=2000,
-    LIMIT=200,
-    PHI_RANGE=(-0.01, 0.01)
-)
-
-print("Best solution:", best_x)
-print("Best fitness:", best_fx)

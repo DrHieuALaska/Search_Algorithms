@@ -52,7 +52,6 @@ def firefly_algorithm(
 
 
     brightness = np.array([objective_function(f) for f in fireflies])
-    convergence = []
 
     # --- Main loop ---
     for _ in range(MAX_ITERATIONS):
@@ -73,53 +72,10 @@ def firefly_algorithm(
                     fireflies[i] = np.clip(fireflies[i], lower, upper)
 
                     brightness[i] = objective_function(fireflies[i])
-        convergence.append(np.min(brightness))
 
     # --- Select best ---
     best_idx = np.argmin(brightness)
     best_solution = fireflies[best_idx]
     best_fitness = objective_function(best_solution)
 
-    return best_solution, best_fitness, convergence
-
-def sphere(X):
-    return np.sum(X**2)
-
-def rosenbrock_func(X):
-    return np.sum(100*(X[1:] - X[:-1]**2)**2 + (X[:-1] - 1)**2)
-
-def rastrigin(X):
-    A = 10
-    return A * len(X) + np.sum(X**2 - A * np.cos(2 * np.pi * X))
-
-DIMENSION = 10
-
-SPHERE_BOUNDS = [[-5.12, 5.12]] * DIMENSION
-ROSENBROCK_BOUNDS = [[-5, 10]] * DIMENSION
-RASTRIGIN_BOUNDS = [[-5.12, 5.12]] * DIMENSION
-
-def suggest_gamma(bounds, fraction=0.5):
-    """
-    Sets gamma so fireflies can 'see' each other at fraction * domain_diagonal.
-    fraction=1.0 → only interact when very close
-    fraction=0.1 → interact across most of the space (more global)
-    """
-    lower = np.array([b[0] for b in bounds])
-    upper = np.array([b[1] for b in bounds])
-    diagonal = np.sqrt(np.sum((upper - lower)**2))   # full diagonal of search space (maximum distance)
-    char_dist = fraction * diagonal
-    return 1.0 / (char_dist**2)
-
-best_x, best_fx, _ = firefly_algorithm(
-    objective_function=rosenbrock_func,
-    DIMENSION=DIMENSION,
-    BOUNDS=ROSENBROCK_BOUNDS,
-    NUM_FIREFLIES=20,
-    MAX_ITERATIONS=460,
-    alpha=0.1, # tune alpha to control randomness (exploration)
-    beta0=1, # tune beta0 to control base attractiveness (exploitation)
-    gamma=suggest_gamma(ROSENBROCK_BOUNDS, 0.5) # tune gamma to control how quickly attractiveness decreases with distance
-)
-
-print("Best solution:", best_x)
-print("Best fitness:", best_fx)
+    return best_solution, best_fitness

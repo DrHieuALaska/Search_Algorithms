@@ -2,10 +2,10 @@ import numpy as np
 
 def particle_swarm_optimization(
     objective_func,
-    dimension,
-    bounds,
-    num_particles=30,
-    max_iter=100,
+    DIMENSION,
+    BOUNDS,
+    NUM_PARTICLES=30,
+    MAX_ITERATIONS=100,
     w=0.7,          # inertia
     c1=1.5,         # cognitive
     c2=1.5          # social
@@ -19,15 +19,15 @@ def particle_swarm_optimization(
                      lower/upper = list or np.array of size dim
     """
 
-    lower = np.array([b[0] for b in bounds])
-    upper = np.array([b[1] for b in bounds])
+    lower = np.array([b[0] for b in BOUNDS])
+    upper = np.array([b[1] for b in BOUNDS])
 
-    if lower.shape[0] != dimension or upper.shape[0] != dimension:
+    if lower.shape[0] != DIMENSION or upper.shape[0] != DIMENSION:
         raise ValueError("Bounds must match the specified dimension.")
 
     # Initialize particles
-    positions = np.random.uniform(lower, upper, (num_particles, dimension))
-    velocities = np.zeros((num_particles, dimension ))
+    positions = np.random.uniform(lower, upper, (NUM_PARTICLES, DIMENSION))
+    velocities = np.zeros((NUM_PARTICLES, DIMENSION))
 
     # Personal best
     pbest_positions = positions.copy()
@@ -38,10 +38,10 @@ def particle_swarm_optimization(
     gbest_position = pbest_positions[gbest_index].copy()
     gbest_score = pbest_scores[gbest_index]
 
-    for _ in range(max_iter):
+    for _ in range(MAX_ITERATIONS):
 
-        r1 = np.random.rand(num_particles, dimension)
-        r2 = np.random.rand(num_particles, dimension)
+        r1 = np.random.rand(NUM_PARTICLES, DIMENSION)
+        r2 = np.random.rand(NUM_PARTICLES, DIMENSION)
 
         # Update velocity
         velocities = (
@@ -69,30 +69,3 @@ def particle_swarm_optimization(
             gbest_position = pbest_positions[best_particle].copy()
 
     return gbest_position, gbest_score
-
-def sphere(X):
-    return X[0]**2 + X[1]**2
-
-def rosenbrock_func(X):
-    return np.sum(100*(X[1:] - X[:-1]**2)**2 + (X[:-1] - 1)**2)
-
-def rastrigin(X):
-    A = 10
-    return A * len(X) + np.sum(X**2 - A * np.cos(2 * np.pi * X))
-
-DIMENSION = 10
-
-SPHERE_BOUNDS = [[-5.12, 5.12]] * DIMENSION
-ROSENBROCK_BOUNDS = [[-5, 10]] * DIMENSION
-RASTRIGIN_BOUNDS = [[-5.12, 5.12]] * DIMENSION
-
-best_pos, best_val = particle_swarm_optimization(
-    objective_func=rastrigin,
-    dimension=DIMENSION,
-    bounds=RASTRIGIN_BOUNDS,
-    num_particles=300,
-    max_iter=200
-)
-
-print("Best position:", best_pos)
-print("Best value:", best_val)
