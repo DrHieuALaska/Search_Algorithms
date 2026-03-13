@@ -1,17 +1,15 @@
 import numpy as np
-import os
 
-def hill_climbing_with_evals(
+def TLBO_with_evals(
     objective_function,
     DIMENSION,
     BOUNDS,
-    N_STARTS=20,
-    MAX_ITERATIONS=1000,
-    STEP_SIZE=0.1,
+    POP_SIZE=50,
+    MAX_ITERATIONS=500,
     INTERVAL_EVALS=100,
     F_TARGET=None,
 ):
-    
+
     COUNT_evals = 0
     best_fitness = np.inf
     best_solution = None
@@ -42,34 +40,73 @@ def hill_climbing_with_evals(
             convergence_history.append((COUNT_evals, best_fitness))
 
         return val
+    
+    # --- Initialize population ---
 
+    lower = np.array([b[0] for b in BOUNDS])
+    upper = np.array([b[1] for b in BOUNDS])
 
-    LOWER_BOUND = np.array([b[0] for b in BOUNDS])
-    UPPER_BOUND = np.array([b[1] for b in BOUNDS])
-    if len(LOWER_BOUND) != DIMENSION or len(UPPER_BOUND) != DIMENSION:
-        raise ValueError("Bounds length must match dimension")
+    if lower.shape[0] != DIMENSION or upper.shape[0] != DIMENSION:
+        raise ValueError("Bounds must match the specified dimension.")
 
-    # ----------------------------------------------------------
-
-    # Initialize random solution
-    current_positions = np.random.uniform(LOWER_BOUND, UPPER_BOUND, (N_STARTS, DIMENSION))
-    current_fitnesses = np.array([counted_objective(pos) for pos in current_positions])
+    population = np.random.uniform(lower, upper, (POP_SIZE, DIMENSION))
+    fitness = np.array([counted_objective(ind) for ind in population])
 
     for _ in range(MAX_ITERATIONS):
-        neighbors = current_positions + np.random.uniform(-STEP_SIZE, STEP_SIZE, (N_STARTS, DIMENSION))
-        neighbors = np.clip(neighbors, LOWER_BOUND, UPPER_BOUND)
-        neighbor_fitnesses = np.array([counted_objective(nei) for nei in neighbors])
 
-        # Move to better neighbors (greedy)
-        better_mask = neighbor_fitnesses < current_fitnesses
+        # -----------------
+        # Teacher Phase (student learns from the teacher)
+        # -----------------
+        teacher_idx = np.argmin(fitness)
+        teacher = population[teacher_idx]
 
-        current_positions[better_mask] = neighbors[better_mask]
-        current_fitnesses[better_mask] = neighbor_fitnesses[better_mask]
-        
+        mean = np.mean(population, axis=0)
+
+        TF = np.random.randint(1, 3)      # Teaching factor (randomly 1 or 2)
+
+        for i in range(POP_SIZE):
+
+            r = np.random.rand(DIMENSION)
+
+            new_solution = population[i] + r * (teacher - TF * mean)
+
+            new_solution = np.clip(new_solution, lower, upper)
+
+            new_fitness = counted_objective(new_solution)
+
+            if new_fitness < fitness[i]:
+                population[i] = new_solution
+                fitness[i] = new_fitness
+
+        # -----------------
+        # Learner Phase (students learn from each other)
+        # -----------------
+        for i in range(POP_SIZE):
+
+            j = np.random.randint(0, POP_SIZE)
+            while j == i:
+                j = np.random.randint(0, POP_SIZE)
+
+            Xi = population[i]
+            Xj = population[j]
+
+            if fitness[i] < fitness[j]:
+                new_solution = Xi + np.random.rand(DIMENSION) * (Xi - Xj)
+            else:
+                new_solution = Xi + np.random.rand(DIMENSION) * (Xj - Xi)
+
+            new_solution = np.clip(new_solution, lower, upper)
+
+            new_fitness = counted_objective(new_solution)
+
+            if new_fitness < fitness[i]:
+                population[i] = new_solution
+                fitness[i] = new_fitness
+    
     success = True if convergence_evals is not None else False
     if(convergence_evals is None):
         convergence_evals = COUNT_evals # penalty: if never hit target, set convergence evals to total evals
-        
+
     return {
         "best_solution": best_solution,
         "best_fitness": best_fitness,
@@ -81,6 +118,7 @@ def hill_climbing_with_evals(
 
 
 import pandas as pd
+import os
 
 # -----------------------------------------------
 # Multi-trial runner (returns list of row dicts)
@@ -107,11 +145,11 @@ def run_trials(func_name, algo_func, algo_kwargs, n_trials=30):
 # -----------------------------------------------
 # Multi-trial for multiple functions & save to CSV
 # -----------------------------------------------
-def Hill_climbing_run_trials_multi_func_to_csv(FUNCTIONS_FOR_HILL_CLIMBING, folder_path, file_name, n_trials=30):
+def TLBO_run_trials_multi_func_to_csv(FUNCTIONS_FOR_TLBO, folder_path, file_name, n_trials=30):
     all_rows = []
-    for fn_cfg in FUNCTIONS_FOR_HILL_CLIMBING:
+    for fn_cfg in FUNCTIONS_FOR_TLBO:
         print(f"\n{'='*20}")
-        print("Hill Climbing")
+        print("Teaching-Learning-Based Optimization")
         print(f"\n{'='*55}")
         print(f"  {fn_cfg['name'].upper()} — {n_trials} trials")
         print(f"{'='*55}")
@@ -120,14 +158,13 @@ def Hill_climbing_run_trials_multi_func_to_csv(FUNCTIONS_FOR_HILL_CLIMBING, fold
             objective_function = fn_cfg["func"],
             DIMENSION          = fn_cfg["dimension"],
             BOUNDS             = fn_cfg["bounds"],
-            N_STARTS           = fn_cfg["n_starts"],
+            POP_SIZE           = fn_cfg["pop_size"],
             MAX_ITERATIONS     = fn_cfg["max_iter"],
-            STEP_SIZE          = fn_cfg["step_size"],
             INTERVAL_EVALS     = fn_cfg["interval_evals"],
             F_TARGET           = fn_cfg["f_target"],
         )
 
-        all_rows.extend(run_trials(fn_cfg["name"], hill_climbing_with_evals, kwargs, n_trials=n_trials))
+        all_rows.extend(run_trials(fn_cfg["name"], TLBO_with_evals, kwargs, n_trials=n_trials))
 
     # Build DataFrame — missing f-columns become NaN
     df = pd.DataFrame(all_rows)

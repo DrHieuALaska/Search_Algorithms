@@ -4,8 +4,10 @@ from Algorithms_with_func_evals.CuckooSearch_func_evals import CuckooSearch_run_
 from Algorithms_with_func_evals.FireFly_func_evals import FireFly_run_trials_multi_func_to_csv
 from Algorithms_with_func_evals.PSO_func_evals import PSO_run_trials_multi_func_to_csv
 from Algorithms_with_func_evals.Differential_evolution_func_evals import DE_run_trials_multi_func_to_csv
-from Algorithms_with_func_evals.Hill_climbing_func_evals import Hill_climbing_run_trials_multi_func_to_csv
-from Algorithms_with_func_evals.Simulated_annealing_func_evals import Simulated_annealing_run_trials_multi_func_to_csv  
+from Algorithms_with_func_evals.Hill_climbing_multi_starts_func_evals import Hill_climbing_multi_starts_run_trials_multi_func_to_csv
+from Algorithms_with_func_evals.Simulated_annealing_multi_starts_func_evals import Simulated_annealing_multi_starts_run_trials_multi_func_to_csv 
+from Algorithms_with_func_evals.TLBO_func_evals import TLBO_run_trials_multi_func_to_csv
+from Algorithms_with_func_evals.GA_func_evals import GA_run_trials_multi_func_to_csv
 import os
 
 
@@ -332,6 +334,87 @@ FUNCTIONS_FOR_SIMULATED_ANNEALING = [
     },
 ]
 
+FUNCTIONS_FOR_GA = [
+    {
+        "name":     "sphere",
+        "func":     sphere,
+        "dimension": DIMENSION,
+        "bounds":   SPHERE_BOUNDS,
+        "pop_size": 200,
+        "max_iter": 499,
+        "crossover_rate": 0.5,
+        "mutation_rate": 0.01,
+        "mutation_scale_with_range": 0.05,
+        "elite_ratio": 0.2,
+        "f_target": F_TARGET_SPHERE,
+        "interval_evals": INTERVAL_EVALS,
+    },
+    {
+        "name":     "rastrigin",
+        "func":     rastrigin,
+        "dimension": DIMENSION,
+        "bounds":   RASTRIGIN_BOUNDS,
+        "pop_size": 200,
+        "max_iter": 499,
+        "crossover_rate": 0.5,
+        "mutation_rate": 0.01,
+        "mutation_scale_with_range": 0.05,
+        "elite_ratio": 0.2,
+        "f_target": F_TARGET_RASTRIGIN,
+        "interval_evals": INTERVAL_EVALS,
+    },
+    {
+        "name":     "rosenbrock",
+        "func":     rosenbrock_func,
+        "dimension": DIMENSION,
+        "bounds":   ROSENBROCK_BOUNDS,
+        "pop_size": 80,
+        "max_iter": 1249,
+        "crossover_rate": 0.5,
+        "mutation_rate": 0.05,
+        "mutation_scale_with_range": 0.05,
+        "elite_ratio": 0.2,
+        "f_target": F_TARGET_ROSENBROCK,
+        "interval_evals": INTERVAL_EVALS,    
+    },
+]
+
+FUNCTIONS_FOR_TLBO = [
+    {
+        "name":     "sphere",
+        "func":     sphere,
+        "dimension": DIMENSION,
+        "bounds":   SPHERE_BOUNDS,
+        "pop_size": 20,
+        "max_iter": 2499,
+        "f_target": F_TARGET_SPHERE,
+        "interval_evals": INTERVAL_EVALS,
+    },
+    {
+        "name":     "rastrigin",
+        "func":     rastrigin,
+        "dimension": DIMENSION,
+        "bounds":   RASTRIGIN_BOUNDS,
+        "pop_size": 100,
+        "max_iter": 499,
+        "f_target": F_TARGET_RASTRIGIN,
+        "interval_evals": INTERVAL_EVALS,
+    },
+    {
+        "name":     "rosenbrock",
+        "func":     rosenbrock_func,
+        "dimension": DIMENSION,
+        "bounds":   ROSENBROCK_BOUNDS,
+        "pop_size": 80,
+        "max_iter": 624,
+        "f_target": F_TARGET_ROSENBROCK,
+        "interval_evals": INTERVAL_EVALS,    
+    },
+]
+
+
+
+
 # ABC_run_trials_multi_func_to_csv(FUNCTIONS_FOR_ABC=FUNCTIONS_FOR_ABC, folder_path=FOLDER_PATH, file_name="abc_results.csv", n_trials=30)
 
 # PSO_run_trials_multi_func_to_csv(FUNCTIONS_FOR_PSO=FUNCTIONS_FOR_PSO, folder_path=FOLDER_PATH, file_name="pso_results.csv", n_trials=30)
@@ -342,6 +425,10 @@ FUNCTIONS_FOR_SIMULATED_ANNEALING = [
 
 # DE_run_trials_multi_func_to_csv(FUNCTIONS_FOR_DE=FUNCTIONS_FOR_DE, folder_path=FOLDER_PATH, file_name="de_results.csv", n_trials=30)
 
-Hill_climbing_run_trials_multi_func_to_csv(FUNCTIONS_FOR_HILL_CLIMBING=FUNCTIONS_FOR_HILL_CLIMBING, folder_path=FOLDER_PATH, file_name="hill_climbing_results.csv", n_trials=30)
+# Hill_climbing_multi_starts_run_trials_multi_func_to_csv(FUNCTIONS_FOR_HILL_CLIMBING=FUNCTIONS_FOR_HILL_CLIMBING, folder_path=FOLDER_PATH, file_name="hill_climbing_results.csv", n_trials=30)
 
-Simulated_annealing_run_trials_multi_func_to_csv(FUNCTIONS_FOR_SIMULATED_ANNEALING=FUNCTIONS_FOR_SIMULATED_ANNEALING, folder_path=FOLDER_PATH, file_name="simulated_annealing_results.csv", n_trials=30)
+# Simulated_annealing_multi_starts_run_trials_multi_func_to_csv(FUNCTIONS_FOR_SIMULATED_ANNEALING=FUNCTIONS_FOR_SIMULATED_ANNEALING, folder_path=FOLDER_PATH, file_name="simulated_annealing_results.csv", n_trials=30)
+
+TLBO_run_trials_multi_func_to_csv(FUNCTIONS_FOR_TLBO=FUNCTIONS_FOR_TLBO, folder_path=FOLDER_PATH, file_name="tlbo_results.csv", n_trials=30)
+
+GA_run_trials_multi_func_to_csv(FUNCTIONS_FOR_GA=FUNCTIONS_FOR_GA, folder_path=FOLDER_PATH, file_name="ga_results.csv", n_trials=30)

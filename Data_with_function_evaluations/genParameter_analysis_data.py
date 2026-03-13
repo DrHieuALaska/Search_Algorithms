@@ -4,6 +4,8 @@ from Parameter_analysis_code.CuckooSearch_parameter_analysis import CuckooSearch
 from Parameter_analysis_code.FireFly_parameter_analysis import Fireflies_run_param_analysis
 from Parameter_analysis_code.PSO_parameter_analysis import PSO_run_param_analysis
 from Parameter_analysis_code.DE_parameter_analysis import DE_run_param_analysis 
+from Parameter_analysis_code.GA_parameter_analysis import GA_run_param_analysis
+from Parameter_analysis_code.TLBO_parameter_analysis import TLBO_run_param_analysis
 import os
 
 BUDGET    = 100_000
@@ -60,6 +62,17 @@ PARAM_GRIDS_FOR_DE = {
     "CR":       [0.1, 0.3, 0.5, 0.7, 0.9],
 }
 
+PARAM_GRIDS_FOR_GA = {
+    "pop_size": [20, 40, 80, 100, 200],
+    "crossover_rate": [0.5, 0.7, 0.9],
+    "mutation_rate": [0.01, 0.05, 0.1],
+    "mutation_scale_with_range": [0.05, 0.1, 0.2],
+    "elite_ratio": [0.0, 0.1, 0.2],
+}
+
+PARAM_GRIDS_FOR_TLBO = {
+    "pop_size": [20, 40, 80, 100, 200],
+}
 # for param_name, param_values in PARAM_GRIDS_FOR_ABC.items():
 #     ABC_run_param_analysis(param_name, param_values, OBJECTIVE_FUNCTIONS, n_trials=N_TRIALS, budget=BUDGET)
 
@@ -69,8 +82,14 @@ PARAM_GRIDS_FOR_DE = {
 # for param_name, param_values in PARAM_GRIDS_FOR_FIREFLIES.items():
 #     Fireflies_run_param_analysis(param_name, param_values, OBJECTIVE_FUNCTIONS, n_trials=N_TRIALS, budget=BUDGET)
 
-for param_name, param_values in PARAM_GRIDS_FOR_PSO.items():
-    PSO_run_param_analysis(param_name, param_values, OBJECTIVE_FUNCTIONS, n_trials=N_TRIALS, budget=BUDGET)
+# for param_name, param_values in PARAM_GRIDS_FOR_PSO.items():
+#     PSO_run_param_analysis(param_name, param_values, OBJECTIVE_FUNCTIONS, n_trials=N_TRIALS, budget=BUDGET)
 
 # for param_name, param_values in PARAM_GRIDS_FOR_DE.items():
 #     DE_run_param_analysis(param_name, param_values, OBJECTIVE_FUNCTIONS, n_trials=N_TRIALS, budget=BUDGET)
+
+for param_name, param_values in PARAM_GRIDS_FOR_GA.items():
+    GA_run_param_analysis(param_name, param_values, OBJECTIVE_FUNCTIONS, n_trials=N_TRIALS, budget=BUDGET)
+
+# for param_name, param_values in PARAM_GRIDS_FOR_TLBO.items():
+#     TLBO_run_param_analysis(param_name, param_values, OBJECTIVE_FUNCTIONS, n_trials=N_TRIALS, budget=BUDGET)

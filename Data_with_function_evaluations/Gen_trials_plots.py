@@ -15,6 +15,8 @@ COLORS = {
     "DE":            "#FF9800",
     "Simulated Annealing": "#3F51B5",
     "Hill Climbing":      "#009688",
+    "TLBO":               "#795548",
+    "GA":                 "#E91E63",
 }
 
 
@@ -269,6 +271,8 @@ if __name__ == "__main__":
         "DE":            "de_graph.csv",
         "Simulated Annealing": "simulated_annealing_graph.csv",
         "Hill Climbing":      "hill_climbing_graph.csv",
+        "TLBO":               "tlbo_graph.csv",
+        "GA":                 "ga_graph.csv",
     }
     FUNCTIONS     = ["sphere", "rastrigin", "rosenbrock"]
     SOURCE_FOLDER = "graph_data"
@@ -280,5 +284,5 @@ if __name__ == "__main__":
         for algo_name, file_name in ALGORITHMS.items()
     }
 
-    plot_all(data, FUNCTIONS, OUTPUT_DIR_MEAN_STD, mode="mean_std")
+    # plot_all(data, FUNCTIONS, OUTPUT_DIR_MEAN_STD, mode="mean_std")
     plot_all(data, FUNCTIONS, OUTPUT_DIR_MEDIAN_IQR, mode="median_iqr")
