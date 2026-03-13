@@ -6,6 +6,7 @@ def genetic_algorithm(
     BOUNDS,
     POP_SIZE=50,
     MAX_ITERATIONS=500,
+    tournament_size=3,
     crossover_rate=0.9,
     mutation_rate=0.1,
     mutation_scale_with_range=0.1,
@@ -28,9 +29,11 @@ def genetic_algorithm(
     best_value = fitness[best_idx]
 
     def tournament_selection():
-        i, j = np.random.choice(POP_SIZE, 2, replace=False) # Ensure two distinct indices
-        return population[i].copy() if fitness[i] < fitness[j] else population[j].copy()  
-      
+        tournament_indices = np.random.choice(POP_SIZE, tournament_size, replace=False)
+        tournament_fitness = fitness[tournament_indices]
+        winner_index = tournament_indices[np.argmin(tournament_fitness)]
+        return population[winner_index].copy()
+
     # make sure at least one elite is preserved
     elite_count = max(1, int(elite_ratio * POP_SIZE)) 
 

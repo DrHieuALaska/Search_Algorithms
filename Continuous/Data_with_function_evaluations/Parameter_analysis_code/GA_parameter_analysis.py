@@ -8,6 +8,7 @@ from Algorithms_with_func_evals.GA_func_evals import GA_with_evals
 # -----------------------------------------------
 DEFAULT_PARAMS = {
     "POP_SIZE": 20,
+    "tournament_size": 3,
     "crossover_rate": 0.9,
     "mutation_rate": 0.1,
     "mutation_scale_with_range": 0.1,
@@ -28,7 +29,7 @@ def compute_max_iterations(pop_size, budget):
     return max(1, int((budget - init_evals) // evals_per_iter))
 
 
-def run_single_trial(fn_cfg, pop_size, crossover_rate, mutation_rate, mutation_scale, elite_ratio, interval_evals, budget,seed):
+def run_single_trial(fn_cfg, pop_size, tournament_size, crossover_rate, mutation_rate, mutation_scale, elite_ratio, interval_evals, budget,seed):
     max_iter = compute_max_iterations(pop_size, budget)
     np.random.seed(seed)
     result = GA_with_evals(
@@ -36,6 +37,7 @@ def run_single_trial(fn_cfg, pop_size, crossover_rate, mutation_rate, mutation_s
         DIMENSION          = len(fn_cfg["bounds"]),
         BOUNDS             = fn_cfg["bounds"],
         POP_SIZE           = pop_size,
+        tournament_size    = tournament_size,
         crossover_rate     = crossover_rate,
         mutation_rate      = mutation_rate,
         mutation_scale_with_range = mutation_scale,
@@ -62,8 +64,10 @@ def GA_run_param_analysis(param_name, param_values, OBJECTIVE_FUNCTIONS, n_trial
         mutation_rate       = DEFAULT_PARAMS["mutation_rate"]
         mutation_scale_with_range = DEFAULT_PARAMS["mutation_scale_with_range"]
         elite_ratio = DEFAULT_PARAMS["elite_ratio"]
+        tournament_size = DEFAULT_PARAMS["tournament_size"]
 
         if param_name == "pop_size": pop_size = param_value
+        elif param_name == "tournament_size": tournament_size = param_value
         elif param_name == "crossover_rate":  crossover_rate   = param_value
         elif param_name == "mutation_rate":  mutation_rate   = param_value
         elif param_name == "mutation_scale_with_range":  mutation_scale_with_range   = param_value
@@ -79,13 +83,14 @@ def GA_run_param_analysis(param_name, param_values, OBJECTIVE_FUNCTIONS, n_trial
             print(f"  [{fn_cfg['name']}]", end="", flush=True)
 
             for trial in range(n_trials):
-                result = run_single_trial(fn_cfg, pop_size, crossover_rate, mutation_rate, mutation_scale_with_range, elite_ratio, interval_evals, budget= budget, seed=trial)
+                result = run_single_trial(fn_cfg, pop_size, tournament_size, crossover_rate, mutation_rate, mutation_scale_with_range, elite_ratio, interval_evals, budget= budget, seed=trial)
 
                 row = {
                     "param_name":        param_name,
                     "param_value":       str(param_value),   # str so tuples serialize cleanly
                     "func_name":         fn_cfg["name"],
                     "pop_size":        pop_size,
+                    "tournament_size":   tournament_size,
                     "crossover_rate":    crossover_rate,
                     "mutation_rate":     mutation_rate,
                     "mutation_scale_with_range": mutation_scale_with_range,
@@ -111,7 +116,7 @@ def GA_run_param_analysis(param_name, param_values, OBJECTIVE_FUNCTIONS, n_trial
     # -----------------------------------------------
     df = pd.DataFrame(all_rows)
 
-    fixed_cols = ["param_name", "param_value", "func_name", "pop_size", "crossover_rate", "mutation_rate", "mutation_scale_with_range", "elite_ratio",
+    fixed_cols = ["param_name", "param_value", "func_name", "pop_size", "tournament_size", "crossover_rate", "mutation_rate", "mutation_scale_with_range", "elite_ratio",
                   "max_iterations", "trial",
                   "best_fitness", "convergence_evals", "total_evals", "success"]
     
