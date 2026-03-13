@@ -213,7 +213,7 @@ def draw_frame(fig, axes, infoboxes, surfaces, pop_hists, best_hists,
     )
 
 
-def make_gif(df, func_name, out_path, n_frames=90, n_pop=30):
+def make_gif(df, func_name, out_path, n_frames=90, n_pop=10):
     print("Loading data & building surfaces …")
     f_cols = [c for c in df.columns if c.startswith('f') and c[1:].isdigit()]
     evals  = np.array([int(c[1:]) for c in f_cols])
@@ -337,10 +337,10 @@ def make_gif(df, func_name, out_path, n_frames=90, n_pop=30):
 
 
 if __name__ == '__main__':
-    func_name = ["ABC", "Cuckoo", "DE", "Firefly", "PSO"]
+    func_name = ["ABC", "Cuckoo", "DE", "Firefly", "PSO", "GA", "TLBO"]
     for i in range(len(func_name)):
         print(f"Function's name: {func_name[i]}" )
         df = pd.read_csv(f'Data/{func_name[i]}_results.csv')
         os.makedirs('3D_Gif', exist_ok=True)
-        make_gif(df, func_name[i], f'3D_Gif/{func_name[i]}.gif', n_frames=90, n_pop=30)
+        make_gif(df, func_name[i], f'3D_Gif/{func_name[i]}.gif', n_frames=90, n_pop=10)
         print("Done!")
