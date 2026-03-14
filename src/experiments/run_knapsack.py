@@ -242,11 +242,13 @@ def main():
             elif algo == "TLBO_KP":
                 # Warning: TLBO evals scale ~ pop + 2*pop*iters.
                 # We'll keep iters from YAML (for sensitivity), but fairness should use best@budget in analysis.
+                move_frac_max = float(params.get("move_frac_max", params.get("move_prob", 0.4)))
                 solver = TLBO_Knapsack(
                     pop_size=int(params.get("pop_size", 50)),
                     iters=int(params.get("iters", 500)),
                     trace_every=int(params.get("trace_every", 10)),
                     feasible_only=feasible_only,
+                    move_frac_max=move_frac_max,
                 )
 
             elif algo == "ABC_KP":
