@@ -11,16 +11,26 @@ from Algorithms_with_func_evals.GA_func_evals import GA_run_trials_multi_func_to
 import os
 
 
-FOLDER_PATH = 'trials_data'
+FOLDER_PATH_10D = 'trials_data/trials_data_10D'
+FOLDER_PATH_30D = 'trials_data/trials_data_30D'
+FOLDER_PATH_50D = 'trials_data/trials_data_50D'
 # Create the directory if it doesn't exist
-if not os.path.exists(FOLDER_PATH):
-    os.makedirs(FOLDER_PATH)
+if not os.path.exists(FOLDER_PATH_10D):
+    os.makedirs(FOLDER_PATH_10D)
+
+if not os.path.exists(FOLDER_PATH_30D):
+    os.makedirs(FOLDER_PATH_30D)
+
+if not os.path.exists(FOLDER_PATH_50D):
+    os.makedirs(FOLDER_PATH_50D)
 
 F_TARGET_SPHERE = 1e-6
 F_TARGET_RASTRIGIN = 1
 F_TARGET_ROSENBROCK = 1
 
-DIMENSION = 10
+# Define the functions, bounds, and parameters for each algorithm
+DIMENSION = 50
+FOLDER_PATH = FOLDER_PATH_50D
 
 SPHERE_BOUNDS = [[-5.12, 5.12]] * DIMENSION
 ROSENBROCK_BOUNDS = [[-5, 10]] * DIMENSION
@@ -416,22 +426,20 @@ FUNCTIONS_FOR_TLBO = [
 ]
 
 
+ABC_run_trials_multi_func_to_csv(FUNCTIONS_FOR_ABC=FUNCTIONS_FOR_ABC, folder_path=FOLDER_PATH, file_name="abc_results.csv", n_trials=30)
 
-
-# ABC_run_trials_multi_func_to_csv(FUNCTIONS_FOR_ABC=FUNCTIONS_FOR_ABC, folder_path=FOLDER_PATH, file_name="abc_results.csv", n_trials=30)
-
-# PSO_run_trials_multi_func_to_csv(FUNCTIONS_FOR_PSO=FUNCTIONS_FOR_PSO, folder_path=FOLDER_PATH, file_name="pso_results.csv", n_trials=30)
+PSO_run_trials_multi_func_to_csv(FUNCTIONS_FOR_PSO=FUNCTIONS_FOR_PSO, folder_path=FOLDER_PATH, file_name="pso_results.csv", n_trials=30)
 
 CuckooSearch_run_trials_multi_func_to_csv(FUNCTIONS_FOR_CUCKOOSEARCH=FUNCTIONS_FOR_CUCKOOSEARCH, folder_path=FOLDER_PATH, file_name="cuckoo_search_results.csv", n_trials=30)
 
-# FireFly_run_trials_multi_func_to_csv(FUNCTIONS_FOR_FIREFLY=FUNCTIONS_FOR_FIREFLY, folder_path=FOLDER_PATH, file_name="firefly_results.csv", n_trials=30)
+FireFly_run_trials_multi_func_to_csv(FUNCTIONS_FOR_FIREFLY=FUNCTIONS_FOR_FIREFLY, folder_path=FOLDER_PATH, file_name="firefly_results.csv", n_trials=30)
 
-# DE_run_trials_multi_func_to_csv(FUNCTIONS_FOR_DE=FUNCTIONS_FOR_DE, folder_path=FOLDER_PATH, file_name="de_results.csv", n_trials=30)
+DE_run_trials_multi_func_to_csv(FUNCTIONS_FOR_DE=FUNCTIONS_FOR_DE, folder_path=FOLDER_PATH, file_name="de_results.csv", n_trials=30)
 
-# Hill_climbing_multi_starts_run_trials_multi_func_to_csv(FUNCTIONS_FOR_HILL_CLIMBING=FUNCTIONS_FOR_HILL_CLIMBING, folder_path=FOLDER_PATH, file_name="hill_climbing_results.csv", n_trials=30)
+Hill_climbing_multi_starts_run_trials_multi_func_to_csv(FUNCTIONS_FOR_HILL_CLIMBING=FUNCTIONS_FOR_HILL_CLIMBING, folder_path=FOLDER_PATH, file_name="hill_climbing_results.csv", n_trials=30)
 
-# Simulated_annealing_multi_starts_run_trials_multi_func_to_csv(FUNCTIONS_FOR_SIMULATED_ANNEALING=FUNCTIONS_FOR_SIMULATED_ANNEALING, folder_path=FOLDER_PATH, file_name="simulated_annealing_results.csv", n_trials=30)
+Simulated_annealing_multi_starts_run_trials_multi_func_to_csv(FUNCTIONS_FOR_SIMULATED_ANNEALING=FUNCTIONS_FOR_SIMULATED_ANNEALING, folder_path=FOLDER_PATH, file_name="simulated_annealing_results.csv", n_trials=30)
 
-# TLBO_run_trials_multi_func_to_csv(FUNCTIONS_FOR_TLBO=FUNCTIONS_FOR_TLBO, folder_path=FOLDER_PATH, file_name="tlbo_results.csv", n_trials=30)
+TLBO_run_trials_multi_func_to_csv(FUNCTIONS_FOR_TLBO=FUNCTIONS_FOR_TLBO, folder_path=FOLDER_PATH, file_name="tlbo_results.csv", n_trials=30)
 
-# GA_run_trials_multi_func_to_csv(FUNCTIONS_FOR_GA=FUNCTIONS_FOR_GA, folder_path=FOLDER_PATH, file_name="ga_results.csv", n_trials=30)
+GA_run_trials_multi_func_to_csv(FUNCTIONS_FOR_GA=FUNCTIONS_FOR_GA, folder_path=FOLDER_PATH, file_name="ga_results.csv", n_trials=30)

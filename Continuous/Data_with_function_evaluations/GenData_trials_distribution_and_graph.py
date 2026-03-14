@@ -2,9 +2,9 @@ import pandas as pd
 import numpy as np
 import os
 
-SOURCE_FOLDER = 'trials_data'
-FOLDER_DISTRIBUTION_PATH = 'distribution_data'
-FOLDER_GRAPH_PATH = 'graph_data'
+SOURCE_FOLDER = 'trials_data/trials_data_50D'
+FOLDER_DISTRIBUTION_PATH = 'distribution_data/50D'
+FOLDER_GRAPH_PATH = 'graph_data/50D'
 # Create the directory if it doesn't exist
 if not os.path.exists(FOLDER_DISTRIBUTION_PATH):
     os.makedirs(FOLDER_DISTRIBUTION_PATH)
@@ -12,7 +12,7 @@ if not os.path.exists(FOLDER_GRAPH_PATH):
     os.makedirs(FOLDER_GRAPH_PATH)
 
 
-ALGORITHMS = ["cuckoo_search"]
+ALGORITHMS = ["abc", "cuckoo_search", "de", "firefly", "pso", "ga", "tlbo", "hill_climbing", "simulated_annealing"]
 
 for algo in ALGORITHMS:
     df = pd.read_csv(os.path.join(SOURCE_FOLDER, f"{algo}_results.csv"))
