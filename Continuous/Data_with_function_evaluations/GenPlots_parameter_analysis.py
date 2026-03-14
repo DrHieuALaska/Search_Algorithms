@@ -242,7 +242,7 @@ if __name__ == "__main__":
 
     # Option A: plot all files in a folder automatically
     plot_all_param_files(
-        input_folder = "param_analysis_data/ga",
+        input_folder = "param_analysis_data/cuckoo_search",
         output_dir   = "plots_param_analysis",
         functions    = FUNCTIONS,
     )

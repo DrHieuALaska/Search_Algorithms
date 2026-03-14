@@ -12,7 +12,7 @@ if not os.path.exists(FOLDER_GRAPH_PATH):
     os.makedirs(FOLDER_GRAPH_PATH)
 
 
-ALGORITHMS = ["abc", "cuckoo_search", "firefly", "pso", "de", "simulated_annealing", "hill_climbing", "ga", "tlbo"]
+ALGORITHMS = ["cuckoo_search"]
 
 for algo in ALGORITHMS:
     df = pd.read_csv(os.path.join(SOURCE_FOLDER, f"{algo}_results.csv"))

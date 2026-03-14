@@ -84,9 +84,9 @@ FUNCTIONS_FOR_CUCKOOSEARCH = [
         "dimension": DIMENSION,
         "bounds":   SPHERE_BOUNDS,
         "n_nests": 20,
-        "max_iter": 4000,
-        "pa": 0.25,
-        "alpha": 0.01,
+        "max_iter": 4545,
+        "pa": 0.1,
+        "alpha": 0.5,
         "f_target": F_TARGET_SPHERE,
         "interval_evals": INTERVAL_EVALS,
     },
@@ -96,9 +96,9 @@ FUNCTIONS_FOR_CUCKOOSEARCH = [
         "dimension": DIMENSION,
         "bounds":   RASTRIGIN_BOUNDS,
         "n_nests": 20,
-        "max_iter": 4000,
-        "pa": 0.25,
-        "alpha": 1,
+        "max_iter": 4545,
+        "pa": 0.1,
+        "alpha": 0.5,
         "f_target": F_TARGET_RASTRIGIN,
         "interval_evals": INTERVAL_EVALS,
     },
@@ -108,8 +108,8 @@ FUNCTIONS_FOR_CUCKOOSEARCH = [
         "dimension": DIMENSION,
         "bounds":   ROSENBROCK_BOUNDS,
         "n_nests": 30,
-        "max_iter": 2668,
-        "pa": 0.25,
+        "max_iter": 3030,
+        "pa": 0.1,
         "alpha": 0.1,
         "f_target": F_TARGET_ROSENBROCK,
         "interval_evals": INTERVAL_EVALS,
@@ -422,7 +422,7 @@ FUNCTIONS_FOR_TLBO = [
 
 # PSO_run_trials_multi_func_to_csv(FUNCTIONS_FOR_PSO=FUNCTIONS_FOR_PSO, folder_path=FOLDER_PATH, file_name="pso_results.csv", n_trials=30)
 
-# CuckooSearch_run_trials_multi_func_to_csv(FUNCTIONS_FOR_CUCKOOSEARCH=FUNCTIONS_FOR_CUCKOOSEARCH, folder_path=FOLDER_PATH, file_name="cuckoo_search_results.csv", n_trials=30)
+CuckooSearch_run_trials_multi_func_to_csv(FUNCTIONS_FOR_CUCKOOSEARCH=FUNCTIONS_FOR_CUCKOOSEARCH, folder_path=FOLDER_PATH, file_name="cuckoo_search_results.csv", n_trials=30)
 
 # FireFly_run_trials_multi_func_to_csv(FUNCTIONS_FOR_FIREFLY=FUNCTIONS_FOR_FIREFLY, folder_path=FOLDER_PATH, file_name="firefly_results.csv", n_trials=30)
 
@@ -434,4 +434,4 @@ FUNCTIONS_FOR_TLBO = [
 
 # TLBO_run_trials_multi_func_to_csv(FUNCTIONS_FOR_TLBO=FUNCTIONS_FOR_TLBO, folder_path=FOLDER_PATH, file_name="tlbo_results.csv", n_trials=30)
 
-GA_run_trials_multi_func_to_csv(FUNCTIONS_FOR_GA=FUNCTIONS_FOR_GA, folder_path=FOLDER_PATH, file_name="ga_results.csv", n_trials=30)
+# GA_run_trials_multi_func_to_csv(FUNCTIONS_FOR_GA=FUNCTIONS_FOR_GA, folder_path=FOLDER_PATH, file_name="ga_results.csv", n_trials=30)

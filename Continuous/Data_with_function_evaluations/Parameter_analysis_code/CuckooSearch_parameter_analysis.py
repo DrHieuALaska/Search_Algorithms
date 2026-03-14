@@ -56,8 +56,8 @@ def CuckooSearch_run_param_analysis(param_name, param_values, OBJECTIVE_FUNCTION
         alpha   = DEFAULT_PARAMS["alpha"]
 
         if param_name == "N_NESTS": n_nests = param_value
-        elif param_name == "PA":     pa       = param_value
-        elif param_name == "ALPHA":  alpha   = param_value
+        elif param_name == "pa":     pa       = param_value
+        elif param_name == "alpha":  alpha   = param_value
 
         max_iter = compute_max_iterations(n_nests, pa, budget)
 
