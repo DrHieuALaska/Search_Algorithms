@@ -1,51 +1,19 @@
+DFS_GC:
+  max_backtracks: 5000000
+  time_limit_sec: 2.0
+  trace_every: 10000
+algos:
+- DFS_GC
 experiment:
-  exp_id: exp_gc_001
-  n_nodes_list: [30, 50]
-  n_colors: 4
+  budget_evals: 50000
+  code_version: ''
   edge_prob: 0.2
   ensure_connected: false
-
-  instances: 10
-  runs_per_instance: 10
-
-  budget_evals: 50000
-  run_csv: runs_graphcolor.csv
-  trace_csv: trace_graphcolor.csv
-  code_version: ""
-
-algos: [SA_GC, GA_GC, HC_GC, ACO_GC, DFS_GC]
-
-SA_GC:
-  T0: 5.0
-  Tmin: 0.001
-  alpha: 0.99
-  max_iter: 49999
-  trace_every: 200
-
-GA_GC:
-  population_size: 100
-  generations: 499     # ~50k evals: pop + gens*pop
-  crossover_rate: 0.9
-  mutation_rate: 0.02
-  tournament_k: 10
-  trace_every: 10
-
-HC_GC:
-  max_iter: 49999
-  mode: first
-  trace_every: 200
-
-ACO_GC:
-  n_ants: 30
-  iters: 1667         # ~50k evals: ants*iters
-  alpha: 1.0
-  beta: 2.0
-  rho: 0.1
-  Q: 1.0
-  trace_every: 10
-  deposit_best_only: true
-
-DFS_GC:
-  time_limit_sec: 2.0
-  max_backtracks: 2000000
-  trace_every: 10000
+  exp_id: exp_gc_001
+  instances: 5
+  n_colors: 4
+  n_nodes_list:
+  - 30
+  run_csv: GC_DFS_bt_3_run.csv
+  runs_per_instance: 3
+  trace_csv: GC_DFS_bt_3_trace.csv

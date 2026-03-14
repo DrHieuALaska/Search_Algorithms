@@ -13,11 +13,11 @@ from core.logging import RunLogger
 from core.config import load_yaml
 from problems.knapsack import KnapsackProblem
 
-from solvers.sa_knapsack import SimulatedAnnealingKnapsack
-from solvers.ga_knapsack import GeneticAlgorithmKnapsack
-from solvers.hc_knapsack import HC_Knapsack
-from solvers.tlbo_knapsack import TLBO_Knapsack
-from solvers.abc_knapsack import ABC_Knapsack
+from solvers.knapsack.sa_knapsack import SimulatedAnnealingKnapsack
+from solvers.knapsack.ga_knapsack import GeneticAlgorithmKnapsack
+from solvers.knapsack.hc_knapsack import HC_Knapsack
+from solvers.knapsack.tlbo_knapsack import TLBO_Knapsack
+from solvers.knapsack.abc_knapsack import ABC_Knapsack
 
 
 def parse_args() -> argparse.Namespace:
@@ -64,8 +64,6 @@ def parse_args() -> argparse.Namespace:
 #             alpha=float(p.get("alpha", 0.99)),
 #             max_iter=int(p.get("max_iter", 50000)),
 #             trace_every=int(p.get("trace_every", 200)),
-#             flip_k=int(p.get("flip_k", 1)),
-#             penalty_lambda=penalty_lambda,
 #             feasible_only=feasible_only,
 #         )
 
@@ -120,12 +118,10 @@ def parse_args() -> argparse.Namespace:
 #         for inst in range(instances):
 #             # Create an instance (adjust if your API differs)
 #             problem = KnapsackProblem.random_instance(
-#                 n_items=int(n_items),
+#                 int(n_items),
 #                 instance_seed=inst,
-#                 weight_low=weight_low,
-#                 weight_high=weight_high,
-#                 value_low=value_low,
-#                 value_high=value_high,
+#                 weight_range=(weight_low, weight_high),
+#                 value_range=(value_low, value_high),
 #                 capacity_ratio=capacity_ratio,
 #             )
 
@@ -213,11 +209,10 @@ def main():
                 solver = SimulatedAnnealingKnapsack(
                     T0=float(params.get("T0", 10.0)),
                     Tmin=float(params.get("Tmin", 1e-3)),
+                    steps_per_temp=int(params.get("steps_per_temp", 2000)),
                     alpha=float(params.get("alpha", 0.99)),
                     max_iter=budget - 1,
                     trace_every=int(params.get("trace_every", 200)),
-                    flip_k=int(params.get("flip_k", 1)),
-                    penalty_lambda=penalty_lambda,
                     feasible_only=feasible_only,
                 )
 
@@ -241,32 +236,30 @@ def main():
                     mode=str(params.get("mode", "first")),
                     trace_every=int(params.get("trace_every", 200)),
                     flip_k=int(params.get("flip_k", 1)),
-                    penalty_lambda=penalty_lambda,
                     feasible_only=feasible_only,
                 )
 
             elif algo == "TLBO_KP":
                 # Warning: TLBO evals scale ~ pop + 2*pop*iters.
                 # We'll keep iters from YAML (for sensitivity), but fairness should use best@budget in analysis.
+                move_frac_max = float(params.get("move_frac_max", params.get("move_prob", 0.4)))
                 solver = TLBO_Knapsack(
                     pop_size=int(params.get("pop_size", 50)),
                     iters=int(params.get("iters", 500)),
                     trace_every=int(params.get("trace_every", 10)),
-                    penalty_lambda=penalty_lambda,
                     feasible_only=feasible_only,
+                    move_frac_max=move_frac_max,
                 )
 
             elif algo == "ABC_KP":
                 sn = int(params.get("sn", 50))
                 # Roughly 2*sn evaluations per iter (employed + onlooker); adjust to hit budget
-                iters = max(1, (budget - sn) // (2 * sn))
+                iters = max(1, (budget - sn) // (2 * sn + sn * (2*sn / max(50000,1))))
                 solver = ABC_Knapsack(
-                    sn=sn,
+                    food_sources=sn,
                     iters=iters,
                     limit=int(params.get("limit", 50)),
                     trace_every=int(params.get("trace_every", 10)),
-                    flip_k=int(params.get("flip_k", 1)),
-                    penalty_lambda=penalty_lambda,
                     feasible_only=feasible_only,
                 )
             else:
@@ -278,12 +271,10 @@ def main():
     for n_items in n_items_list:
         for inst in range(instances):
             problem = KnapsackProblem.random_instance(
-                n_items=int(n_items),
+                int(n_items),
                 instance_seed=inst,
-                weight_low=weight_low,
-                weight_high=weight_high,
-                value_low=value_low,
-                value_high=value_high,
+                weight_range=(weight_low, weight_high),
+                value_range=(value_low, value_high),
                 capacity_ratio=capacity_ratio,
             )
 
