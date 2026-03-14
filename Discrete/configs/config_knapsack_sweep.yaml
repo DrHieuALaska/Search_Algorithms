@@ -1,0 +1,64 @@
+experiment:
+  exp_id: exp_kp_sweep_001
+  n_items_list: [100, 200]      # recommended for sensitivity
+  instances: 5
+  runs_per_instance: 3
+
+  weight_low: 1
+  weight_high: 50
+  value_low: 1
+  value_high: 100
+  capacity_ratio: 0.5
+
+  budget_evals: 50000           # normalize effort target (approx)
+  penalty_lambda: 1000.0
+  feasible_only: true
+
+  run_csv: runs_knapsack_sweep.csv
+  trace_csv: trace_knapsack_sweep.csv
+  code_version: ""
+
+algos: [SA_KP, GA_KP, HC_KP, TLBO_KP, ABC_KP]
+
+# Base params
+SA_KP:
+  Tmin: 0.001
+  trace_every: 200
+  flip_k: 1
+
+GA_KP:
+  population_size: 100
+  crossover_rate: 0.9
+  trace_every: 10
+
+HC_KP:
+  trace_every: 200
+
+TLBO_KP:
+  trace_every: 10
+
+ABC_KP:
+  trace_every: 10
+  flip_k: 1
+
+# 2 impactful params per algo
+sweeps:
+  SA_KP:
+    alpha: [0.95, 0.99, 0.995]
+    T0:    [1, 10, 20]
+
+  GA_KP:
+    mutation_rate: [0.005, 0.01, 0.05]
+    tournament_k:  [2, 5, 20]
+
+  HC_KP:
+    mode:   [first, best]
+    flip_k: [1, 2, 5, 10]
+
+  TLBO_KP:
+    pop_size: [20, 40, 60, 100]
+    iters:    [200, 500, 1000]   # NOTE: may exceed 50k evals; analysis should compare best@50k
+
+  ABC_KP:
+    sn:    [20, 50, 100]
+    limit: [10, 25, 50, 100]

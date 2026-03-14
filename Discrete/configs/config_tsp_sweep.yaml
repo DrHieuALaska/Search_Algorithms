@@ -1,0 +1,58 @@
+experiment:
+  exp_id: exp_tsp_sweep_001
+  n_list: [30]
+  instances: 5
+  runs_per_instance: 3
+  scale: 100.0
+  budget_evals: 50000          # << key: normalize effort across algos
+
+  run_csv: runs_sweep.csv
+  trace_csv: trace_sweep.csv
+  code_version: ""
+
+# algos: [SA, HC, GA, TLBO, ACO]
+algos: [TLBO]
+# Base (default) params per algorithm
+# SA:
+#   Tmin: 0.001
+#   steps_per_temp: 2000
+#   trace_every: 200
+
+# HC:
+#   trace_every: 200
+
+# GA:
+#   population_size: 100         
+#   trace_every: 10
+
+TLBO:
+  trace_every: 10
+
+# ACO:
+#   n_ants: 30                  
+#   alpha: 1.0
+#   Q: 100.0
+#   trace_every: 10
+#   deposit_best_only: false
+
+# Sweeps: 2 impactful params per algo
+sweeps:
+  SA:
+    alpha: [0.95, 0.99, 0.995]
+    T0:    [10, 100, 300]
+
+  HC:
+    mode:      [first, best]
+    restarts:  [1, 5, 10]      # runner will split budget across restarts
+
+  GA:
+    mutation_rate: [0.1, 0.2, 0.4]
+    tournament_k:  [5, 10, 20]
+
+  TLBO:
+    pop_size: [50, 80, 120]
+    move_frac_max: [0.4, 0.6, 0.8] # budget capped (or approx-matched)
+
+  ACO:
+    rho:  [0.05, 0.1, 0.2]
+    beta: [1, 2, 3]
