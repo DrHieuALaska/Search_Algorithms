@@ -239,4 +239,32 @@ def budget_table(target_normalized: int, n: int) -> dict[str, dict]:
     return result
 
 
+# ── Pretty-print helper ───────────────────────────────────────────────────────
 
+def print_budget_table(target_normalized: int, n: int) -> None:
+    """
+    Print a human-readable budget comparison table.
+
+    Example output (target=40_000, n=30):
+    ┌────────┬─────────────┬────────────┬───────────────────┐
+    │ Algo   │ work_factor │ raw_budget │ normalized_budget │
+    ├────────┼─────────────┼────────────┼───────────────────┤
+    │ HC     │    0.0333   │  1200000   │       40000.0     │
+    │ SA     │    0.0333   │  1200000   │       40000.0     │
+    │ GA     │    1.0000   │    40000   │       40000.0     │
+    │ TLBO   │    1.0000   │    40000   │       40000.0     │
+    │ ACO    │   30.0000   │     1333   │       39990.0     │
+    └────────┴─────────────┴────────────┴───────────────────┘
+    """
+    tbl = budget_table(target_normalized, n)
+    header = f"\nBudget table — target_normalized={target_normalized:,}  n={n}\n"
+    print(header)
+    print(f"{'Algo':<8} {'work_factor':>12} {'raw_budget':>12} {'norm_budget_check':>18}")
+    print("─" * 56)
+    for algo, v in tbl.items():
+        print(
+            f"{algo:<8} {v['work_factor']:>12.4f} "
+            f"{v['raw_budget']:>12,} "
+            f"{v['normalized_budget_check']:>18,.1f}"
+        )
+    print()

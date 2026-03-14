@@ -34,17 +34,23 @@ class TLBO_TSP:
         *,
         pop_size: int = 50,
         iters: int = 500,
+        max_evals: int = 50_000,
         trace_every: int = 10,
-        move_frac_max: float = 1.0,
+        move_frac_max: float = 0.4,
     ):
         if pop_size <= 2:
             raise ValueError("pop_size must be > 2")
         if iters <= 0:
             raise ValueError("iters must be > 0")
+        if max_evals <= 0:
+            raise ValueError("max_evals must be > 0")
         if trace_every <= 0:
             raise ValueError("trace_every must be > 0")
+        if not (0.0 < move_frac_max <= 1.0):
+            raise ValueError("move_frac_max must be in (0,1]")
         self.pop_size = int(pop_size)
         self.iters = int(iters)
+        self.max_evals = int(max_evals)
         self.trace_every = int(trace_every)
         self.move_frac_max = float(move_frac_max)
 
@@ -159,12 +165,19 @@ class TLBO_TSP:
 
         checkpoint(0)
 
+        budget_exhausted = False
         for it in range(1, self.iters + 1):
+            if budget_exhausted:
+                break
+
             # Teacher phase
             teacher_idx = int(np.argmin(costs))
             teacher = pop[teacher_idx]
 
             for i in range(self.pop_size):
+                if evals_cost >= self.max_evals:
+                    budget_exhausted = True
+                    break
                 if i == teacher_idx:
                     continue
                 cand = self._move_towards(pop[i], teacher, rng)
@@ -180,8 +193,15 @@ class TLBO_TSP:
                         evals_best_found = evals_cost
                         time_best_found_sec = elapsed()
 
+            if budget_exhausted:
+                checkpoint(it)
+                break
+
             # Learner phase
             for i in range(self.pop_size):
+                if evals_cost >= self.max_evals:
+                    budget_exhausted = True
+                    break
                 j = int(rng.integers(0, self.pop_size - 1))
                 if j >= i:
                     j += 1
@@ -199,8 +219,10 @@ class TLBO_TSP:
                             evals_best_found = evals_cost
                             time_best_found_sec = elapsed()
 
-            if it % self.trace_every == 0:
+            if it % self.trace_every == 0 or budget_exhausted:
                 checkpoint(it)
+            if budget_exhausted:
+                break
 
         time_sec = elapsed()
 

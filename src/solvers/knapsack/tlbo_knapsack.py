@@ -33,7 +33,7 @@ class TLBO_Knapsack:
         iters: int = 500,
         trace_every: int = 10,
         feasible_only: bool = True,
-        move_prob: float = 0.3,   # probability to copy a differing bit
+        move_frac_max: float = 0.4,   # probability to copy a differing bit
     ):
         if pop_size <= 2:
             raise ValueError("pop_size must be > 2")
@@ -41,20 +41,20 @@ class TLBO_Knapsack:
             raise ValueError("iters must be > 0")
         if trace_every <= 0:
             raise ValueError("trace_every must be > 0")
-        if not (0.0 < move_prob <= 1.0):
-            raise ValueError("move_prob must be in (0,1]")
+        if not (0.0 < move_frac_max <= 1.0):
+            raise ValueError("move_frac_max must be in (0,1]")
         self.pop_size = int(pop_size)
         self.iters = int(iters)
         self.trace_every = int(trace_every)
         self.feasible_only = bool(feasible_only)
-        self.move_prob = float(move_prob)
+        self.move_frac_max = float(move_frac_max)
 
     def _move_towards(self, x: np.ndarray, target: np.ndarray, rng: np.random.Generator) -> np.ndarray:
         y = x.copy()
         diff = (y != target)
         if not np.any(diff):
             return y
-        mask = diff & (rng.random(y.shape[0]) < self.move_prob)
+        mask = diff & (rng.random(y.shape[0]) < self.move_frac_max)
         y[mask] = target[mask]
         return y
 
@@ -220,7 +220,7 @@ class TLBO_Knapsack:
                 "alpha": "",
                 "steps_per_temp": "",
                 "max_iter": self.iters,
-                "neighbor_operator": f"copydiff(p={self.move_prob})+repair" if self.feasible_only else f"copydiff(p={self.move_prob})+penalty",
+                "neighbor_operator": f"copydiff(p={self.move_frac_max})+repair" if self.feasible_only else f"copydiff(p={self.move_frac_max})+penalty",
 
                 "iters": self.iters,
                 "evals_cost": evals_cost,

@@ -66,12 +66,15 @@ def main():
 
     if "TLBO" in algos:
         p = cfg.get("TLBO", {})
+        tlbo_iters = int(p.get("iters", p.get("iter", 500)))
+        tlbo_move_frac = float(p.get("move_frac_max", p.get("move_prob", 1.0)))
+        tlbo_max_evals = int(p.get("max_evals", exp.get("budget_evals", 50_000)))
         solvers["TLBO"] = TLBO_TSP(
             pop_size=int(p.get("pop_size", 50)),
-            iters=int(p.get("iters", 500)),
-            max_evals=int(p.get("max_evals", 50_000)),
+            iters=tlbo_iters,
+            max_evals=tlbo_max_evals,
             trace_every=int(p.get("trace_every", 10)),
-            move_frac_max=float(p.get("move_frac_max", 1.0))
+            move_frac_max=tlbo_move_frac,
         )
 
     if "GA" in algos:

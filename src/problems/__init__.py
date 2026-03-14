@@ -1,3 +1,4 @@
+from .tsp import TSPProblem
 
 from .knapsack import KnapsackProblem
 

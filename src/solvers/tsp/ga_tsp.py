@@ -21,6 +21,7 @@ class GeneticAlgorithmTSP:
         population_size: int = 100,
         generations: int = 400,
         mutation_rate: float = 0.2,
+        crossover_rate: float = 0.8,  
         tournament_k: int = 10,
         trace_every: int = 10,
     ):
@@ -30,6 +31,8 @@ class GeneticAlgorithmTSP:
             raise ValueError("generations must be > 0")
         if not (0.0 <= mutation_rate <= 1.0):
             raise ValueError("mutation_rate must be in [0,1]")
+        if not (0.0 <= crossover_rate <= 1.0):
+            raise ValueError("crossover_rate must be in [0,1]")
         if tournament_k <= 0 or tournament_k > population_size:
             raise ValueError("tournament_k must be in [1, population_size]")
         if trace_every <= 0:
@@ -38,6 +41,7 @@ class GeneticAlgorithmTSP:
         self.population_size = int(population_size)
         self.generations = int(generations)
         self.mutation_rate = float(mutation_rate)
+        self.crossover_rate = float(crossover_rate)
         self.tournament_k = int(tournament_k)
         self.trace_every = int(trace_every)
 
@@ -168,7 +172,10 @@ class GeneticAlgorithmTSP:
             for i in range(self.population_size):
                 mom = self._tournament_selection(pop, fitness, rng)
                 dad = self._tournament_selection(pop, fitness, rng)
-                child = self._order_crossover(mom, dad, rng)
+                if rng.random() < self.crossover_rate:
+                    child = self._order_crossover(mom, dad, rng)
+                else:
+                    child = mom.copy()
                 self._mutate_swap(child, rng)
                 offspring[i] = child
 
