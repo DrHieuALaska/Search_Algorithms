@@ -337,6 +337,18 @@ if __name__ == "__main__":
     FUNCTIONS     = ["sphere", "rastrigin", "rosenbrock"]
     SOURCE_FOLDER = "graph_data"
 
+    SOURCE_FOLDER_10D = os.path.join(SOURCE_FOLDER, "10D")
+    OUTPUT_DIR_MEAN_STD    = "plots_trials_mean_std"
+    OUTPUT_DIR_MEDIAN_IQR  = "plots_trials_median_iqr"
+
+    data = {
+        algo_name: pd.read_csv(os.path.join(SOURCE_FOLDER_10D, file_name))
+        for algo_name, file_name in ALGORITHMS.items()
+    }
+
+    # plot_all(data, FUNCTIONS, OUTPUT_DIR_MEAN_STD, mode="mean_std")
+    plot_all(data, FUNCTIONS, OUTPUT_DIR_MEDIAN_IQR, mode="median_iqr")
+
     plot_scalability(
         source_folder = SOURCE_FOLDER,
         algorithms    = ALGORITHMS,
